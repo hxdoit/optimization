@@ -40,8 +40,16 @@ for i in range(N):
 
 print sum(pltY1)-sum(T)
 
-plt.plot(range(N), pltY1, label="1", color="green", linewidth = 1, linestyle = '-')
-plt.plot(range(N), T, label="2", color="red", linewidth = 1, linestyle = '-')
+pltY2 = []
+for i in range(N):
+    temp = 0
+    for j in range(1, M + 1):
+        temp += j*Wa[j][0]*(i**(j-1))
+    pltY2.append(temp)
+
+#plt.plot(range(N), pltY1, label="1", color="green", linewidth = 1, linestyle = '-')
+plt.plot(range(N), pltY2, label="1", color="green", linewidth = 1, linestyle = '-')
+#plt.plot(range(N), T, label="2", color="red", linewidth = 1, linestyle = '-')
 plt.xlabel("time(s)")
 plt.ylabel("distance(m)")
 plt.title("multiband")

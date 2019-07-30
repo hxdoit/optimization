@@ -2,10 +2,10 @@ import numpy as np
 import matplotlib.pyplot as plt
 import random
 
-M =  10 
+M = 19
 T = []
 
-with open('temp', 'r') as file_to_read:
+with open('temp1', 'r') as file_to_read:
     while True:
         lines = file_to_read.readline()
         if not lines:
