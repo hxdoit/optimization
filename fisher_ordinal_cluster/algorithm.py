@@ -31,7 +31,7 @@ for i in range(1, N):
         D[i][j] = dist(T, i,  j)
 
 #divide num clusters
-num=5
+num=8
 K = num+1
 #lost
 L = np.zeros((N, K))

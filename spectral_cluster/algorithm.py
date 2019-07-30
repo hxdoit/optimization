@@ -110,7 +110,7 @@ if __name__ == '__main__':
             T.append(int(lines))
     data = np.array([[i, T[i]] for i in range(len(T))])
 
-    #data, label = make_blobs(centers=5, n_features=2, cluster_std=1.2, n_samples=500, random_state=1)
+    #data, label = make_blobs(centers=8, n_features=2, cluster_std=1.2, n_samples=500, random_state=1)
     sp = Spectrum(n_cluster=7, method='normalized', criterion='gaussian', gamma=0.01)
     sp.fit(data)
     cluster = sp.cluster
