@@ -1,10 +1,11 @@
 import numpy as np
-import sys
+import sys,math
 import matplotlib.pyplot as plt
 import random
 
 M =10 
 data = []
+candidate=[]
 
 with open('temp1', 'r') as file_to_read:
     while True:
@@ -37,26 +38,32 @@ def fit(T, M, startIdx):
     print Wa
     
     pltY1 = []
-    for i in range(N):
+    for i in range(N*100):
         temp = 0
         for j in range(M + 1):
-            temp += Wa[j][0]*(i**j)
+            temp += Wa[j][0]*((i*0.01)**j)
         pltY1.append(temp)
     
     print sum(pltY1)-sum(T)
-    plt.plot([k+startIdx for k in range(N)], pltY1, label="1", color="green", linewidth = 1, linestyle = '-')
+    plt.plot([k*0.01+startIdx for k in range(N*100)], pltY1, label="1", color="green", linewidth = 1, linestyle = '-')
 
+    XX=[]
+    YY=[]
     last1 = 0
     last2 = 0
-    for i in range(N*10):
+    for i in range(N*100):
+        jizhiX=0.01*(i-1)+startIdx 
+        XX.append(jizhiX)
         temp = 0
-        for j in range(1, M):
-            temp += j*Wa[j][0]*((i*0.1)**(j-1))
+        for j in range(1, M+1):
+            temp += j*Wa[j][0]*((i*0.01)**(j-1))
+        YY.append(abs(temp))
         if last1 !=0 and last2 !=0 and (last2 > last1 and last2 > temp or last2 < last1  and last2 < temp):
-            jizhiX=0.1*(i-1)+startIdx 
-            plt.plot([jizhiX, jizhiX], [0, 400], label="1", color="green", linewidth = 1, linestyle = '-')
+            plt.plot([jizhiX, jizhiX], [200, 400], label="1", color="green", linewidth = 1, linestyle = '-')
+            candidate.append([jizhiX, abs(temp)])
         last1=last2      
         last2=temp
+    plt.plot(XX,YY, label="1", color="green", linewidth = 1, linestyle = '-')
 
 
 start=0
@@ -66,6 +73,10 @@ for hour in range(0, hours-5, 6):
     end = start+24
     fit(data[start:end], M, start)
 
+candidate.sort(key=lambda x:x[1], reverse=True)
+print candidate
+for mm in range(7):
+    plt.plot([candidate[mm][0],  candidate[mm][0]],[0, 200], label="1", color="blue", linewidth = 1, linestyle = '-')
 plt.xlabel("time(15min)")
 plt.ylabel("flow(pcu)")
 plt.title("fit")
