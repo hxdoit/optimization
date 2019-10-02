@@ -1,2 +1,6 @@
+最大似然估计：
 https://www.cnblogs.com/lliuye/p/9139032.html
+先验概率可理解为统计概率，后验概率可理解为条件概率。
+最大后验估计：
+https://cloud.tencent.com/developer/article/1450270
 
