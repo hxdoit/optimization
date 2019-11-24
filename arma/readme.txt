@@ -20,3 +20,8 @@ https://wenku.baidu.com/view/04e9f885284ac850ad024256.html
 https://wenku.baidu.com/view/cad7134f2e3f5727a5e962e1.html
 Python实现时间序列分析
 http://xtf615.com/2017/03/08/Python%E5%AE%9E%E7%8E%B0%E6%97%B6%E9%97%B4%E5%BA%8F%E5%88%97%E5%88%86%E6%9E%90/
+t分布
+https://blog.csdn.net/lengxiao1993/article/details/81985399
+时间序列（二）：初识自回归模型AR、滑动平均模型MR
+https://zhuanlan.zhihu.com/p/54163589
+
