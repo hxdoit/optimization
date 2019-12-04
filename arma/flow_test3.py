@@ -9,7 +9,7 @@ import sys
 data= pd.read_csv(sys.argv[1])
 ts=data['flow']
 ts_diff = ts.diff(1)
-ts_diff.dropna(inplace=True)
+#ts_diff.dropna(inplace=True)
 ts_list=[]
 for i in range(ts_diff.size): 
     if i ==0:
@@ -66,26 +66,95 @@ def _proper_model(ts_log_diff, maxLag):
 #print _proper_model(ts_list,10) 
 
 
-#-0.807344 -0.648254 -0.49305 -0.356703 -0.226996 -0.121837
+arParams=[-0.807344, -0.648254, -0.49305, -0.356703, -0.226996, -0.121837]
+
+tsShift =  ts.shift(1)
 
 model = ARIMA(ts,order=(6,1,0)) 
 results_AR = model.fit(disp=-1)
 plt.plot(ts,color='green')
-predict=results_AR.fittedvalues+ts.shift(1)
-plt.plot(predict, color='red') 
-for i in range(predict.size):
-    diff=(predict[i]-ts[i])/ts[i]
-    if abs(diff)>0.2:
-        if predict[i]+ts[i]<1:
+
+history=[]
+history_shift=[0]
+
+def isDiff(a, b):
+    diff=abs(a-b)
+    add=a+b
+    if diff/b <= 0.2:
+        return False
+    if add <=0:
+        return False
+    temp=math.sqrt((diff**2)/(add/2)) 
+    if temp>2 and add>15:
+        return True
+    return False
+        
+lastDropValue=0
+lastDropIdx=0
+    
+
+myPredict=[]
+i=0
+while i < ts.size:
+    if i<7:
+        history.insert(0,ts[i])
+        myPredict.append(ts[i])
+        if i > 0:
+            history_shift.insert(0,ts[i-1])
+        i+=1
+        continue
+    tempP = 0
+    for j in range(6):
+        tempP +=  arParams[j] * (history[j]-history_shift[j])
+
+    temp0 = tempP + history[0] 
+    myPredict.append(temp0)
+
+    if isDiff(temp0, ts[i]):
+        if lastDropIdx+1==i and not isDiff(lastDropValue, ts[i]):
+            history_shift.insert(0,history[0])
+            history.insert(0,lastDropValue)
+            history.pop()
+            history_shift.pop()
+            history_shift.insert(0,history[0])
+            history.insert(0,ts[i])
+            history.pop()
+            history_shift.pop()
+            #erase last drop 
+            lastDropIdx=0
+            i+=1
             continue
-        temp=math.sqrt((predict[i]-ts[i])**2/((predict[i]+ts[i])/2))
-        if temp>2 and abs(predict[i]+ts[i])>15:
-            plt.plot(i,ts[i],'bo') 
+        #confirm last drop
+        if lastDropIdx!=0:
+            plt.plot(lastDropIdx,lastDropValue,'bo') 
+            lastDropIdx=0
+        lastDropIdx=i
+        lastDropValue=ts[i]
+        i+=1 
+        continue
+
+    #confirm last
+    if lastDropIdx!=0:
+        plt.plot(lastDropIdx,lastDropValue,'bo') 
+        lastDropIdx=0
+    history_shift.insert(0,history[0])
+    history.insert(0,ts[i])
+    history.pop()
+    history_shift.pop()
+    i+=1
+    
+#print myPredict
+#print results_AR.fittedvalues 
+        
+#predict=results_AR.fittedvalues+ts.shift(1)
+plt.plot(myPredict, color='red') 
 #plt.plot(ts_diff,color='blue')
 #plt.plot(results_AR.fittedvalues, color='red') 
 #plt.title('RSS:%.4f' % sum((results_AR.fittedvalues-ts_diff)**2))
 print results_AR.arparams
 print results_AR.maparams
+#print ts_diff
+#print results_AR.fittedvalues
 #print ts
 #print ts_diff
 #print results_AR.fittedvalues

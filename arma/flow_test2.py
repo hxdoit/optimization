@@ -9,7 +9,7 @@ import sys
 data= pd.read_csv(sys.argv[1])
 ts=data['flow']
 ts_diff = ts.diff(1)
-ts_diff.dropna(inplace=True)
+#ts_diff.dropna(inplace=True)
 ts_list=[]
 for i in range(ts_diff.size): 
     if i ==0:
@@ -66,26 +66,70 @@ def _proper_model(ts_log_diff, maxLag):
 #print _proper_model(ts_list,10) 
 
 
-#-0.807344 -0.648254 -0.49305 -0.356703 -0.226996 -0.121837
+arParams=[-0.807344, -0.648254, -0.49305, -0.356703, -0.226996, -0.121837]
+
+tsShift =  ts.shift(1)
 
 model = ARIMA(ts,order=(6,1,0)) 
 results_AR = model.fit(disp=-1)
 plt.plot(ts,color='green')
-predict=results_AR.fittedvalues+ts.shift(1)
-plt.plot(predict, color='red') 
-for i in range(predict.size):
-    diff=(predict[i]-ts[i])/ts[i]
+
+history=[]
+history_shift=[0]
+
+myPredict=[]
+i=0
+while i < ts.size:
+    print "-------",i
+    if i<7:
+        history.insert(0,ts[i])
+        myPredict.append(ts[i])
+        if i > 0:
+            history_shift.insert(0,ts[i-1])
+        i+=1
+        continue
+    tempP = 0
+    for j in range(6):
+        tempP +=  results_AR.arparams[j] * (history[j]-history_shift[j])
+    #print history
+    #print history_shift
+    #sys.exit(0)
+
+    temp0 = tempP + history[0] 
+    myPredict.append(temp0)
+    if i==227:
+        print history
+        print history_shift
+
+    temp1=temp0 + ts[i]
+    temp2=temp0 - ts[i]
+    diff = temp2 / ts[i]
     if abs(diff)>0.2:
-        if predict[i]+ts[i]<1:
-            continue
-        temp=math.sqrt((predict[i]-ts[i])**2/((predict[i]+ts[i])/2))
-        if temp>2 and abs(predict[i]+ts[i])>15:
-            plt.plot(i,ts[i],'bo') 
+        if temp1>0:
+            temp3 = math.sqrt((temp2**2) / (temp1/2))
+            if temp3>2 and abs(temp1)>15:
+                plt.plot(i,ts[i],'bo') 
+                print "-----hit",i
+                i+=1 
+                continue
+    history_shift.insert(0,history[0])
+    history.insert(0,ts[i])
+    history.pop()
+    history_shift.pop()
+    i+=1
+    
+#print myPredict
+#print results_AR.fittedvalues 
+        
+#predict=results_AR.fittedvalues+ts.shift(1)
+plt.plot(myPredict, color='red') 
 #plt.plot(ts_diff,color='blue')
 #plt.plot(results_AR.fittedvalues, color='red') 
 #plt.title('RSS:%.4f' % sum((results_AR.fittedvalues-ts_diff)**2))
 print results_AR.arparams
 print results_AR.maparams
+#print ts_diff
+#print results_AR.fittedvalues
 #print ts
 #print ts_diff
 #print results_AR.fittedvalues

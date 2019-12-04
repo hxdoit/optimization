@@ -7,7 +7,7 @@ M =10
 data = []
 candidate=[]
 
-with open('temp1', 'r') as file_to_read:
+with open('temp', 'r') as file_to_read:
     while True:
         lines = file_to_read.readline()
         if not lines:
@@ -15,6 +15,10 @@ with open('temp1', 'r') as file_to_read:
         data.append(int(lines)) 
         
 plt.plot(range(len(data)), data, label="2", color="red", linewidth = 1, linestyle = '-')
+plt.xlabel("time(5min)")
+plt.ylabel("flow(pcu)")
+plt.show()
+sys.exit(0)
         
 
 def fit(T, M, startIdx):
